@@ -13,8 +13,6 @@ export const GotoUserProfile = async(router: AppRouterInstance)=>{
     else{
         SetCookieObject('user', Response.user);
         setTimeout(async () => {
-           // const user = await GetCookieObject('user');   
-           // console.log(user);
             router.push(`/profile`);
         }, 1000); 
     }

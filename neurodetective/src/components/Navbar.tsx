@@ -12,7 +12,7 @@ const Navbar = async () => {
 
   //const { getUser } = await GetCookie('token')
   const user = await GetCookie('token')
- const isAdmin = user?.email === process.env.ADMIN_EMAIL
+ //const isAdmin = user?.email === process.env.ADMIN_EMAIL
   return (
     <nav className='sticky z-[100] h-14 inset-x-0 top-0 w-full border-b border-gray-200 bg-white/75 backdrop-blur-lg transition-all'>
       <MaxWidthWrapper>
@@ -24,14 +24,14 @@ const Navbar = async () => {
           <div className='h-full flex items-center space-x-4'>
             {user ? (
               <>
-                {isAdmin ? (
+                {user ? (
                   <Link
-                    href='/dashboard'
+                    href='/profile'
                     className={buttonVariants({
                       size: 'sm',
                       variant: 'ghost',
                     })}>
-                    Dashboard ✨
+                    Profile ✨
                   </Link>
                 ) : null}
                 <Link
@@ -67,7 +67,7 @@ const Navbar = async () => {
 
                 <div className='h-8 w-px bg-zinc-200 hidden sm:block' />
 
-                <Link
+                {/* <Link
                   href='/configure/upload'
                   className={buttonVariants({
                     size: 'sm',
@@ -75,7 +75,7 @@ const Navbar = async () => {
                   })}>
                   Check MRI Image
                   <ArrowRight className='ml-1.5 h-5 w-5' />
-                </Link>
+                </Link> */}
               </>
             )}
           </div>

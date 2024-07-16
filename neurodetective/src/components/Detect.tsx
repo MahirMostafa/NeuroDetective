@@ -1,27 +1,16 @@
-// pages/upload.tsx
-
 import { useState, ChangeEvent, FormEvent } from 'react';
 import axios from 'axios';
+import { useDropzone } from 'react-dropzone';
+import { Image, Loader2, MousePointerSquareDashed } from 'lucide-react'; // Replace with your actual icon components
 
 export default function Detect() {
-  const [file, setFile] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState<string>('');
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
+  const [isDragOver, setIsDragOver] = useState<boolean>(false);
 
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setFile(e.target.files[0]);
-    }
-  };
-
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!file) {
-      setError('Please select an image file.');
-      return;
-    }
-
+  const onDropAccepted = async (acceptedFiles: File[]) => {
+    const file = acceptedFiles[0];
     const formData = new FormData();
     formData.append('image', file);
 
@@ -34,7 +23,7 @@ export default function Detect() {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
-          responseType: 'blob', // Ensure response type is blob for binary data
+          responseType: 'blob',
         }
       );
 
@@ -49,20 +38,36 @@ export default function Detect() {
     }
   };
 
+  const { getRootProps, getInputProps } = useDropzone({
+    onDropAccepted,
+    //accept: ['image/png', 'image/jpeg', 'image/jpg'],
+    onDragEnter: () => setIsDragOver(true),
+    onDragLeave: () => setIsDragOver(false),
+  });
+
   return (
-    <div>
-      <h1>Object Detection</h1>
-      <form onSubmit={handleSubmit}>
-        <input type="file" onChange={handleFileChange} accept="image/*" required />
-        <button type="submit" disabled={loading}>
-          {loading ? 'Uploading...' : 'Upload and Detect'}
-        </button>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-      </form>
+    <div className="container mx-auto p-4">
+      <div
+        className="h-full w-full flex-1 flex flex-col items-center border-2 border-dashed rounded-lg"
+        {...getRootProps()}
+      >
+        <input {...getInputProps()} />
+        {isDragOver ? (
+          <MousePointerSquareDashed className="h-6 w-6 text-zinc-500 mb-2" />
+        ) : loading ? (
+          <Loader2 className="animate-spin h-6 w-6 text-zinc-500 mb-2" />
+        ) : (
+          <Image className="h-6 w-6 text-zinc-500 mb-2" />
+        )}
+        <p className="text-center">
+          Drag & drop the MRI image file here, or click to select one
+        </p>
+      </div>
+      {error && <p className="text-red-500 mt-2">{error}</p>}
       {imageUrl && (
-        <div>
-          <h2>Annotated Image:</h2>
-          <img src={imageUrl} alt="Annotated" style={{ maxWidth: '100%' }} />
+        <div className="mt-4">
+          <h2 className="text-lg font-semibold mb-2">Annotated Image:</h2>
+          <img src={imageUrl} alt="Annotated" className="max-w-full mb-4" />
         </div>
       )}
     </div>
